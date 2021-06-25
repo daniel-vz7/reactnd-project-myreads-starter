@@ -4,9 +4,16 @@ import './App.css';
 import { getAll } from './BooksAPI';
 import BookShelf from './components/BookShelf';
 
-// const shelfs = [{
-
-// }];
+const shelfs = [{
+    value: 'currentlyReading',
+    title: 'Currently Reading'
+  }, {
+    value: 'wantToRead',
+    title: 'Want to Read'
+  }, {
+    value: 'read',
+    title: 'Read'
+}];
 
 class BooksApp extends Component {
   state = {
@@ -20,12 +27,20 @@ class BooksApp extends Component {
     books: [],
   }
 
-  componentDidMount = async () => {
+  componentDidMount = () => {
+    this.refreshBooks();
+  }
+  
+  refreshBooks = async () => {
     const result = await getAll();
     this.setState({
       books: result
     });
   }
+
+  //TODO Render in routes
+  //TODO apply a loading animation when the books is changed from shelf
+  //TODO implement search method
 
   render() {
     const { books } = this.state;
@@ -59,18 +74,14 @@ class BooksApp extends Component {
             </div>
             <div className="list-books-content">
               <div>
-                <BookShelf
-                  books={books.filter(({ shelf }) => (shelf === 'currentlyReading'))}
-                  shelfTitle={'Currently Reading'}
-                  />
-                <BookShelf
-                  books={books.filter(({ shelf }) => (shelf === 'wantToRead'))}
-                  shelfTitle={'Want to Read'}
-                  />
-                <BookShelf
-                  books={books.filter(({ shelf }) => (shelf === 'read'))}
-                  shelfTitle={'Read'}
-                  />
+                {shelfs.map(({value, title}) => (
+                  <BookShelf
+                    key={value}
+                    books={books.filter(({ shelf }) => (shelf === value))}
+                    shelfTitle={title}
+                    refreshBooks={this.refreshBooks}
+                    />
+                ))}
               </div>
             </div>
             <div className="open-search">
